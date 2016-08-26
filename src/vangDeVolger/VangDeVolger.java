@@ -5,7 +5,6 @@ import java.util.Timer;
 class VangDeVolger {
 
     private Grid grid;
-    //TODO hoort hier niet, refactor
     private Player player;
     private Enemy enemy;
     private CustomFrame frame;
@@ -13,6 +12,8 @@ class VangDeVolger {
     //    private static boolean play = true;
     private Timer timer;
     private boolean isRunning;
+
+    private Integer FPS = 60;
 
 
     private VangDeVolger() {
@@ -22,7 +23,7 @@ class VangDeVolger {
         grid = new Grid(gridLength, gridWidth, percentage);
         player = new Player(grid.tiles[1][1]);
         enemy = new Enemy(grid.tiles[gridLength - 2][gridWidth - 2], gridLength, gridWidth);
-        frame = new CustomFrame(gridLength, gridWidth, player);
+        frame = new CustomFrame(gridLength, gridWidth, player, enemy);
         timer = new Timer();
         isRunning = true;
         //The following is done in the constructor of Player resp. Enemy (actually in the MovableObject constructor)
@@ -38,24 +39,29 @@ class VangDeVolger {
 
     private void startGame(){
         frame.setGrid(grid);
-        timer.schedule(new gameLoop(),0, 1000/60);//timing mechanism at 60fps
+        timer.schedule(new gameLoop(),0, 1000/FPS);//timing mechanism at 60fps
     }
 
     private class gameLoop extends java.util.TimerTask{
 
+        private Integer frameCount = 0;
+
         public void run(){//the actual game loop
+            frameCount += 1;
+            System.out.println(frameCount);
             for (Tile buur : enemy.myTile.burenMap.values()) {
                 if (buur.getContent() instanceof Player) {
                     frame.system_exit(); //Game over!
                 }
-                //freedom = freedom || buur.isEmpty();
             }
 
-            enemy.move(enemy.randomMove());
+
+            if(frameCount%(FPS) == 0)
+                enemy.AI();
 
             frame.repaint();
 
-            if(isRunning){
+            if(!isRunning){
                 timer.cancel();
             }
         }

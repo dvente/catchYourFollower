@@ -16,6 +16,7 @@ public class CustomFrame extends JFrame implements KeyListener {
 
     //TODO deze hoort niet bij deze klasse, refactor
     private  Player player;
+    private Enemy enemy;
     //TODO deze hoort niet bij deze klasse, refactor
     private  boolean play = true;
 
@@ -40,16 +41,16 @@ public class CustomFrame extends JFrame implements KeyListener {
         if (play) {
             System.out.println(e);
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                player.move(DirectionEnum.DOWN);
+                player.move(DirectionEnum.RIGHT);
             }
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                player.move(DirectionEnum.UP);
-            }
-            if (e.getKeyCode() == KeyEvent.VK_UP) {
                 player.move(DirectionEnum.LEFT);
             }
+            if (e.getKeyCode() == KeyEvent.VK_UP) {
+                player.move(DirectionEnum.UP);
+            }
             if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                player.move(DirectionEnum.RIGHT);
+                player.move(DirectionEnum.DOWN);
             }
         }
     }
@@ -104,11 +105,12 @@ public class CustomFrame extends JFrame implements KeyListener {
     }
 
     // Create a constructor method
-    public CustomFrame(int rows, int columns, Player p) {
+    public CustomFrame(int rows, int columns, Player p, Enemy e) {
         super();
 
         pane = new JPanel();
         player = p;
+        enemy = e;
         pauseButton = new JButton("Pause");
         playButton = new JButton("Play");
         graphics = new MyGraphics(rows, columns);

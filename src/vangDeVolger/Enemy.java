@@ -46,6 +46,6 @@ public class Enemy extends MovableObject
 
 
 
-        return DirectionEnum.LEFT;
+        return DirectionEnum.NONE;
     }
 }
