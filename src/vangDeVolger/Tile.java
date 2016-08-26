@@ -3,8 +3,8 @@ package vangDeVolger;
 import java.util.EnumMap;
 
 public class Tile {
-
-    private final int x, y; //set in constructor and never used after that
+    //TODO revert xy back to private
+    public final int x, y; //set in constructor and never used after that
     private boolean isEmpty;
     private GameObject content;
 

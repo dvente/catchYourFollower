@@ -22,7 +22,7 @@ class VangDeVolger {
         int gridWidth = 10;
         grid = new Grid(gridLength, gridWidth, percentage);
         player = new Player(grid.tiles[1][1]);
-        enemy = new Enemy(grid.tiles[gridLength - 2][gridWidth - 2], gridLength, gridWidth);
+        enemy = new Enemy(grid.tiles[gridLength - 2][gridWidth - 2], gridLength, gridWidth, player);
         frame = new CustomFrame(gridLength, gridWidth, player, enemy);
         timer = new Timer();
         isRunning = true;
@@ -48,7 +48,6 @@ class VangDeVolger {
 
         public void run(){//the actual game loop
             frameCount += 1;
-            System.out.println(frameCount);
             for (Tile buur : enemy.myTile.burenMap.values()) {
                 if (buur.getContent() instanceof Player) {
                     frame.system_exit(); //Game over!
@@ -56,7 +55,7 @@ class VangDeVolger {
             }
 
 
-            if(frameCount%(FPS) == 0)
+            if(frameCount%(FPS) == 0)//Enemy moves every second
                 enemy.AI();
 
             frame.repaint();
