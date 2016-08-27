@@ -22,7 +22,7 @@ class VangDeVolger {
         int gridWidth = 10;
         grid = new Grid(gridLength, gridWidth, percentage);
         player = new Player(grid.tiles[1][1]);
-        enemy = new Enemy(grid.tiles[gridLength - 2][gridWidth - 2], gridLength, gridWidth, player);
+        enemy = new Enemy(grid.tiles[gridLength - 2][gridWidth - 2], gridLength, gridWidth);
         frame = new CustomFrame(gridLength, gridWidth, player, enemy);
         timer = new Timer();
         isRunning = true;
