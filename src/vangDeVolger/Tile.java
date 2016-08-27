@@ -1,40 +1,35 @@
 package vangDeVolger;
 
+import java.awt.*;
 import java.util.EnumMap;
 
 public class Tile {
-    //TODO revert xy back to private
-    public final int x, y; //set in constructor and never used after that
+
+    final EnumMap<DirectionEnum, Tile> neighbourMap = new EnumMap<>(DirectionEnum.class);
     private boolean isEmpty;
     private GameObject content;
 
-    EnumMap<DirectionEnum, Tile> burenMap = new EnumMap<DirectionEnum, Tile>(DirectionEnum.class);
-
-    public Tile(int newX, int newY) {
-        x = newX;
-        y = newY;
+    public Tile() {
         isEmpty = true;
     }
 
-    //The rest is a bunch of accessor and mutator functions
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
+    public Color getColor() {
+        if (isEmpty())
+            return Color.white;
+        else
+            return content.getColor();
     }
 
     public boolean isEmpty() {
         return isEmpty;
     }
 
+    public GameObject getContent() {
+        return content;
+    }
+
     public void setContent(GameObject newContent) {
         content = newContent;
         isEmpty = (content == null);
-    }
-
-    public GameObject getContent() {
-        return content;
     }
 }

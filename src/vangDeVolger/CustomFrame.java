@@ -2,23 +2,48 @@ package vangDeVolger;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-public class CustomFrame extends JFrame implements KeyListener {
+
+//TODO reset button
+//TODO pause/restart button
+//TODO win/loose panels so game remains active after game end
+
+class CustomFrame extends JFrame implements KeyListener {
 
     private final int rowHeight = 50;
     private final int columnWidth = 50;
-    private JButton pauseButton;
-    private JButton playButton;
-    private JPanel pane;
-    private JComponent graphics;
+    private final JButton pauseButton;
+    private final JButton playButton;
+    private final JPanel pane;
+    private final JComponent graphics;
+    //TODO deze hoort niet bij deze klasse, refactor
+    private final Player player;
     private Grid grid;
+    //TODO deze hoort niet bij deze klasse, refactor
+    private boolean play = true;
 
-    //TODO deze hoort niet bij deze klasse, refactor
-    private  Player player;
-    private Enemy enemy;
-    //TODO deze hoort niet bij deze klasse, refactor
-    private  boolean play = true;
+    public CustomFrame(int rows, int columns, Player p) {
+        super();
+        pane = new JPanel();
+        player = p;
+        pauseButton = new JButton("Pause");
+        playButton = new JButton("Play");
+        graphics = new GridView(rows, columns);
+        grid = null;
+        addKeyListener(this);
+        this.setFocusable(true);
+        this.requestFocusInWindow();
+        setContentPane(pane);
+        setSize((columns + 2) * columnWidth, (rows + 1) * rowHeight);
+        setLayout(new GridBagLayout());
+        initLayout();
+        addListeners();
+        setVisible(true);
+    }
 
     @Override
     public void addNotify() {
@@ -39,7 +64,6 @@ public class CustomFrame extends JFrame implements KeyListener {
     public void keyPressed(KeyEvent e) {
         //TODO Stuur zulke events door naar een spel-klasse als `VangDeVolger` die wordt meegegeven aan deze UI klasse (via de constructor bijv), pas niet vanuit de UI direct deze structuren aan.
         if (play) {
-            System.out.println(e);
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                 player.move(DirectionEnum.RIGHT);
             }
@@ -55,77 +79,6 @@ public class CustomFrame extends JFrame implements KeyListener {
         }
     }
 
-    public class exitFrame extends JFrame {
-
-        JFrame Frame = new JFrame();
-
-        public exitFrame() {
-            super("Game over");
-        }
-    }
-
-
-    //TODO rename MyGraphics
-    public class MyGraphics extends JComponent {
-
-        MyGraphics(int rows, int columns) {
-            setMinimumSize(new Dimension(rows * rowHeight, columns * columnWidth));
-        }
-
-        @Override
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            if (grid == null) {
-                return;
-            }
-
-            for (int i = 0; i < grid.width; i++) {
-                for (int j = 0; j < grid.length; j++) {
-                    paintTile(g, grid.tiles[i][j], i, j);
-                }
-            }
-        }
-
-        private void paintTile(Graphics g, Tile t, int i, int j) {
-            //TODO use overrides
-            if (t.isEmpty()) {
-                g.setColor(Color.white);
-            } else if (t.getContent() instanceof Rock) {
-                g.setColor(Color.black);
-            } else if (t.getContent() instanceof Player) {
-                g.setColor(Color.blue);
-            } else if (t.getContent() instanceof Enemy) {
-                g.setColor(Color.red);
-            } else if (t.getContent() instanceof Box) {
-                g.setColor(new Color(156, 93, 82));
-            }
-
-            g.fillRect(i * columnWidth, j * rowHeight, columnWidth, rowHeight);
-        }
-    }
-
-    // Create a constructor method
-    public CustomFrame(int rows, int columns, Player p, Enemy e) {
-        super();
-
-        pane = new JPanel();
-        player = p;
-        enemy = e;
-        pauseButton = new JButton("Pause");
-        playButton = new JButton("Play");
-        graphics = new MyGraphics(rows, columns);
-        grid = null;
-        addKeyListener(this);
-        this.setFocusable(true);
-        this.requestFocusInWindow();
-        setContentPane(pane);
-        setSize((columns + 2) * columnWidth, (rows + 1) * rowHeight);
-        setLayout(new GridBagLayout());
-        initLayout();
-        addListeners();
-        setVisible(true);
-    }
-
     private void addListeners() {
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
@@ -134,22 +87,18 @@ public class CustomFrame extends JFrame implements KeyListener {
         });
 
         // Button listeners
-        playButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println(e);
-                play = true;
-                System.out.println(play);
-            }
+        playButton.addActionListener(e -> {
+            System.out.println(e);
+            play = true;
+            System.out.println(play);
         });
 
         playButton.setFocusable(false);
 
-        pauseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println(e);
-                play = false;
-                System.out.println(play);
-            }
+        pauseButton.addActionListener(e -> {
+            System.out.println(e);
+            play = false;
+            System.out.println(play);
         });
 
         pauseButton.setFocusable(false);
@@ -168,10 +117,6 @@ public class CustomFrame extends JFrame implements KeyListener {
         endPane.add(endText, gbc);
         setContentPane(endPane);
         setVisible(true);
-    }
-
-    public boolean continue_playing() {
-        return play;
     }
 
     private void initLayout() {
@@ -213,8 +158,40 @@ public class CustomFrame extends JFrame implements KeyListener {
         graphics.paintComponents(getGraphics());
     }
 
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
+    private class exitFrame extends JFrame {
+
+        JFrame Frame = new JFrame();
+
+        public exitFrame() {
+            super("Game over");
+        }
+    }
+
+
+    public class GridView extends JComponent {
+
+        GridView(int rows, int columns) {
+            setMinimumSize(new Dimension(rows * rowHeight, columns * columnWidth));
+        }
+
+        @Override
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (grid == null) {
+                return;
+            }
+
+            for (int i = 0; i < grid.width; i++) {
+                for (int j = 0; j < grid.length; j++) {
+                    paintTile(g, grid.tiles[i][j], i, j);
+                }
+            }
+        }
+
+        private void paintTile(Graphics g, Tile t, int i, int j) {
+            g.setColor(t.getColor());
+
+            g.fillRect(i * columnWidth, j * rowHeight, columnWidth, rowHeight);
+        }
     }
 }

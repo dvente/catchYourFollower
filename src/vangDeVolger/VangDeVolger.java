@@ -4,26 +4,28 @@ import java.util.Timer;
 
 class VangDeVolger {
 
-    private Grid grid;
-    private Player player;
-    private Enemy enemy;
-    private CustomFrame frame;
+    private final Grid grid;
+    private final Enemy enemy;
+    private final CustomFrame frame;
 
     //    private static boolean play = true;
-    private Timer timer;
-    private boolean isRunning;
+    private final Timer timer;
+    private final boolean isRunning;
 
-    private Integer FPS = 60;
+    private final Integer FPS = 60;
 
 
     private VangDeVolger() {
-        int percentage = 15;
+        int boxPercentage = 40;
+        int rockPercentage = 1;
         int gridLength = 10;
         int gridWidth = 10;
-        grid = new Grid(gridLength, gridWidth, percentage);
-        player = new Player(grid.tiles[1][1]);
-        enemy = new Enemy(grid.tiles[gridLength - 2][gridWidth - 2], gridLength, gridWidth);
-        frame = new CustomFrame(gridLength, gridWidth, player, enemy);
+        grid = new Grid(gridLength, gridWidth, boxPercentage, rockPercentage);
+//        player = new Player(grid.getInitPlayerTile());
+//        enemy = new Enemy(grid.getInitEnemyTile());
+        Player player = new Player(grid.getInitPlayerTile());
+        enemy = new Enemy(grid.getInitEnemyTile());
+        frame = new CustomFrame(gridLength, gridWidth, player);
         timer = new Timer();
         isRunning = true;
         //The following is done in the constructor of Player resp. Enemy (actually in the MovableObject constructor)
@@ -48,14 +50,15 @@ class VangDeVolger {
 
         public void run(){//the actual game loop
             frameCount += 1;
-            for (Tile buur : enemy.myTile.burenMap.values()) {
-                if (buur.getContent() instanceof Player) {
-                    frame.system_exit(); //Game over!
-                }
+            //TODO improve logic for win/loose conditions
+            boolean freedom = false;
+            for (Tile neighbour : enemy.myTile.neighbourMap.values()) {
+                freedom = freedom || neighbour.isEmpty();
             }
+            if (!freedom)
+                frame.system_exit(); //Game over!
 
-
-            if(frameCount%(FPS) == 0)//Enemy moves every second
+            if (frameCount % (FPS * 5) == 0)//Enemy moves every second
                 enemy.AI();
 
             frame.repaint();
@@ -66,29 +69,4 @@ class VangDeVolger {
         }
     }
 
-    public void mainLoop() {
-
-
-//        long startTime;
-//        boolean freedom;
-//        DirectionEnum direction;
-//        startTime = System.nanoTime();
-//
-//        while (true) {
-//            frame.repaint();
-//
-//            if (System.nanoTime() - startTime > 10000000 && frame.continue_playing()) {
-//                freedom = false;
-//                for (Tile buur : enemy.myTile.burenMap.values()) {
-//                    if (buur.getContent() instanceof Player) {
-//                        frame.system_exit(); //Game over!
-//                    }
-//                    freedom = freedom || buur.isEmpty();
-//                }
-//
-//                this.enemy.move(enemy.randomMove());
-//                startTime = System.nanoTime();
-//            }
-//        }
-    }
 }

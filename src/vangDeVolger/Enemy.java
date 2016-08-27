@@ -1,21 +1,27 @@
 package vangDeVolger;
 
 
-import java.util.*;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 public class Enemy extends MovableObject {
 
+    public Enemy(Tile newTile) {
+        super(newTile);
+        color = Color.red;
+    }
+
     //gateway function
     public void AI() {
-        DirectionEnum dir = BFS();
-        System.out.println(dir);
-        move(dir);
+        move(BFS());
     }
 
     //Enemy can't move boxes, hence the @Override
     @Override
     public void move(DirectionEnum direction) {
-        Tile directionTile = (myTile.burenMap.get(direction));
+        Tile directionTile = (myTile.neighbourMap.get(direction));
 
         if (directionTile == null) return;
 
@@ -26,17 +32,11 @@ public class Enemy extends MovableObject {
         }
     }
 
-    public Enemy(Tile newTile, int length, int width) {
-        super(newTile);
-        int length1 = length;
-        int width1 = width;
-    }
-
-    public DirectionEnum randomMove() {
+    private DirectionEnum randomMove() {
         return (DirectionEnum.randomDirection());
     }
 
-    public DirectionEnum BFS(){
+    private DirectionEnum BFS() {
 
         LinkedList<Tile> queue = new LinkedList<>();
         Map<Tile, Tile> pred = new HashMap<>();
@@ -50,15 +50,13 @@ public class Enemy extends MovableObject {
 
         while((current = queue.poll()) != null){
             if(current.getContent() instanceof Player){
-                System.out.println("Found him!");
                 Tile temp = pred.get(current);
                 while(pred.get(temp)!= myTile)
                     temp = pred.get(temp);
                 nextMove = temp;
             }
-            for (Tile neighbour: current.burenMap.values()) {
+            for (Tile neighbour : current.neighbourMap.values()) {
                 if(!pred.containsKey(neighbour) && (neighbour.isEmpty() || neighbour.getContent() instanceof Player)){
-                    System.out.println("Expanding ("+Integer.toString(neighbour.getX())+","+Integer.toString(neighbour.getY())+")");
                     dist.put(neighbour,dist.get(current)+1);
                     pred.put(neighbour,current);
                     queue.add(neighbour);
@@ -67,19 +65,21 @@ public class Enemy extends MovableObject {
             }
         }
 
-        if (myTile.burenMap.get(DirectionEnum.UP) == nextMove)
+        if (myTile.neighbourMap.get(DirectionEnum.UP) == nextMove)
             return DirectionEnum.UP;
 
-        else if (myTile.burenMap.get(DirectionEnum.DOWN) == nextMove)
+        else if (myTile.neighbourMap.get(DirectionEnum.DOWN) == nextMove)
             return DirectionEnum.DOWN;
 
-        else if(myTile.burenMap.get(DirectionEnum.LEFT) == nextMove)
+        else if (myTile.neighbourMap.get(DirectionEnum.LEFT) == nextMove)
             return DirectionEnum.LEFT;
 
-        else if(myTile.burenMap.get(DirectionEnum.RIGHT) == nextMove)
+        else if (myTile.neighbourMap.get(DirectionEnum.RIGHT) == nextMove)
             return DirectionEnum.RIGHT;
-        else
-            return DirectionEnum.NONE;
+        else {
+            return randomMove();
+        }
+
 
     }//BFS
 }
