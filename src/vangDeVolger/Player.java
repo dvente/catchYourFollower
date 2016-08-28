@@ -13,20 +13,14 @@ class Player extends MovableObject implements Observer {
         nextDir = DirectionEnum.NONE;
     }
 
-    private Player() {
-        color = Color.blue;
-        nextDir = DirectionEnum.NONE;
-    }
-
-    //TODO maybe pass tile here?
-    public static Player getInstance() {
+    public static Player getInstance(Tile myTile) {
         if (instance == null)
-            instance = new Player();
+            instance = new Player(myTile);
         return instance;
     }
 
-    public static void reset() {
-        instance = new Player();
+    public static void reset(Tile myTile) {
+        instance = new Player(myTile);
     }
 
     //we'll get updates from two different subjects so we have to differentiate between
@@ -41,9 +35,11 @@ class Player extends MovableObject implements Observer {
 
         if (changedObject != null)
             nextDir = (DirectionEnum) changedObject;
+        if (changedObject == null) {
+            move(nextDir);
+            nextDir = DirectionEnum.NONE;
 
-        move(nextDir);
-        nextDir = DirectionEnum.NONE;
+        }
     }
 
 }

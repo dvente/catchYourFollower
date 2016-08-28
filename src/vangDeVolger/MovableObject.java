@@ -5,12 +5,12 @@ public abstract class MovableObject extends GameObject {
 
     Tile myTile;
 
-    public MovableObject(Tile newTile) {
+    MovableObject(Tile newTile) {
         myTile = newTile;
         myTile.setContent(this);
     }
 
-    public MovableObject() {
+    MovableObject() {
         //this does nothinig but makes sure that
         //enemy and player can be singeltons
     }
@@ -24,7 +24,7 @@ public abstract class MovableObject extends GameObject {
         return (myTile.neighbourMap.get(direction).isEmpty() || direction == DirectionEnum.NONE || myTile.neighbourMap.get(direction).getContent().canYouMove(direction));
     }
 
-    public void move(DirectionEnum direction) {
+    void move(DirectionEnum direction) {
         Tile directionTile = (myTile.neighbourMap.get(direction));
 
         //The null clause should never happen, since every tile where a player or box can be in has a neighbor, the boundary rocks.

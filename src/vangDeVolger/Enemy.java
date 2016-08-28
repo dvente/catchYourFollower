@@ -12,7 +12,6 @@ public class Enemy extends MovableObject implements Subject, Observer {
     //Enemy is a singelton class
     private static Enemy instance = null;
     private List<Observer> observers;
-    private boolean canStillMove = false;
     private int frameCount = 0;
 
     private Enemy(Tile newTile) {
@@ -22,19 +21,19 @@ public class Enemy extends MovableObject implements Subject, Observer {
     }
 
 
-    private Enemy() {
-        color = Color.red;
-        this.observers = new LinkedList<>();
-    }
+//    private Enemy() {
+//        color = Color.red;
+//        this.observers = new LinkedList<>();
+//    }
 
-    public static Enemy getInstance() {
+    public static Enemy getInstance(Tile myTile) {
         if (instance == null)
-            instance = new Enemy();
+            instance = new Enemy(myTile);
         return instance;
     }
 
-    public static void reset() {
-        instance = new Enemy();
+    public static void reset(Tile myTile) {
+        instance = new Enemy(myTile);
     }
 
     //Enemy can't move boxes, hence the @Override
@@ -125,9 +124,14 @@ public class Enemy extends MovableObject implements Subject, Observer {
 
     @Override
     public void update(Object changedObject) {
+
+        //string updates do not concern the enemy
+        if (changedObject instanceof String)
+            return;
+
         frameCount++;
 
-        canStillMove = false;
+        boolean canStillMove = false;
         for (Tile neighbour : myTile.neighbourMap.values()) {
             if (neighbour.isEmpty()) {
                 canStillMove = true;
@@ -139,9 +143,12 @@ public class Enemy extends MovableObject implements Subject, Observer {
 
         DirectionEnum dir = BFS();
 
-        if (myTile.neighbourMap.get(dir).getContent() != null)
-            if (myTile.neighbourMap.get(dir).getContent() instanceof Player)
+        for (Tile neighbour : myTile.neighbourMap.values()) {
+            if (neighbour.getContent() instanceof Player) {
+                System.out.println("Sending lose update");
                 notifyObservers("lose");
+            }
+        }
 
         if (frameCount % 60 * 5 == 0)
             move(dir);
