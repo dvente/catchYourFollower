@@ -5,22 +5,31 @@ public abstract class MovableObject extends GameObject {
 
     Tile myTile;
 
-    MovableObject(Tile newTile) {
+    public MovableObject(Tile newTile) {
         myTile = newTile;
         myTile.setContent(this);
     }
 
+    public MovableObject() {
+        //this does nothinig but makes sure that
+        //enemy and player can be singeltons
+    }
+
+    public void setMyTile(Tile myTile) {
+        this.myTile = myTile;
+    }
+
     @Override
     public boolean canYouMove(DirectionEnum direction) {
-        return (myTile.neighbourMap.get(direction).isEmpty() || myTile.neighbourMap.get(direction).getContent().canYouMove(direction));
+        return (myTile.neighbourMap.get(direction).isEmpty() || direction == DirectionEnum.NONE || myTile.neighbourMap.get(direction).getContent().canYouMove(direction));
     }
 
     public void move(DirectionEnum direction) {
         Tile directionTile = (myTile.neighbourMap.get(direction));
 
-        //This should never happen, since every tile where a player or box can be in has a neighbor, the boundary rocks.
-        //But just to be sure...
-        if (directionTile == null) {
+        //The null clause should never happen, since every tile where a player or box can be in has a neighbor, the boundary rocks.
+        //the None clause is to break recursion of move
+        if (directionTile == null || direction == DirectionEnum.NONE) {
             return;
         }
 

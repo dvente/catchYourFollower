@@ -1,37 +1,42 @@
 package vangDeVolger;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 
-class VangDeVolger {
+class VangDeVolger implements Observer, Subject {
 
-    private final Grid grid;
-    private final Enemy enemy;
-    private final CustomFrame frame;
+    private static final Integer FPS = 60;
+    private World world;
+    private UI frame;
+    private Timer timer;
+    private List<Observer> observers;
+    private boolean isRunning = true;
 
-    //    private static boolean play = true;
-    private final Timer timer;
-    private final boolean isRunning;
+    private int boxPercentage = 40;
+    private int rockPercentage = 1;
+    private int gridLength = 10;
+    private int gridWidth = 10;
 
-    private final Integer FPS = 60;
-
-
+    //all initialization is handeled in startGame so it's easy to reset
     private VangDeVolger() {
-        int boxPercentage = 40;
-        int rockPercentage = 1;
-        int gridLength = 10;
-        int gridWidth = 10;
-        grid = new Grid(gridLength, gridWidth, boxPercentage, rockPercentage);
-//        player = new Player(grid.getInitPlayerTile());
-//        enemy = new Enemy(grid.getInitEnemyTile());
-        Player player = new Player(grid.getInitPlayerTile());
-        enemy = new Enemy(grid.getInitEnemyTile());
-        frame = new CustomFrame(gridLength, gridWidth, player);
+        observers = new LinkedList<>();
+
+        world = new World(gridLength, gridWidth, boxPercentage, rockPercentage);
+
+        //player needs to be pased to setup observer patern between keyboard and player
+        frame = new UI(gridLength, gridWidth, world.getPlayer());
         timer = new Timer();
         isRunning = true;
-        //The following is done in the constructor of Player resp. Enemy (actually in the MovableObject constructor)
-        //grid.tiles[1][1].setContent(player);
-        //grid.tiles[grid.length - 2][grid.width - 2].setContent(enemy);
-        //TODO niet hun verantwoordelijkhied refactor
+
+        //setup UI as publisher to get notifications of pause etc.
+        frame.register(this);
+        //setup Enemy as publisher to get notified about end game logic
+        world.getEnemy().register(this);
+
+        //setup Vang de Volger to let the game peices know when to move
+        register(world.getEnemy());
+        register(world.getPlayer());
     }
 
     public static void main(String[] args) {
@@ -40,8 +45,64 @@ class VangDeVolger {
     }
 
     private void startGame(){
-        frame.setGrid(grid);
+
+
+        frame.setWorld(world);
         timer.schedule(new gameLoop(),0, 1000/FPS);//timing mechanism at 60fps
+    }
+
+    //TODO add end game logic here
+    @Override
+    public void update(Object changedObject) {
+        // Only the enemy will notify VangDeVolger so no typechecking is needed
+
+        if (changedObject instanceof String)
+            if (changedObject == "win") {
+                frame.win();
+                //frame.repaint();
+//                timer.cancel();
+            } else if (changedObject == "lose") {
+                System.out.println("YOU LOSE");
+                //frame.lose();
+//                timer.cancel();
+            } else if (changedObject == "reset") {
+                System.out.println("Reset request received");
+                world.reset(boxPercentage, rockPercentage);
+            } else if (changedObject == "pauze") {
+                if (isRunning) {
+                    isRunning = false;
+                    timer.cancel();
+                } else {
+                    isRunning = true;
+                    timer.schedule(new gameLoop(), 0, 1000 / FPS);//timing mechanism at 60fps
+                }
+
+            }
+
+    }
+
+    @Override
+    public void register(Observer obj) {
+
+        if (obj == null)
+            return;
+
+        if (!observers.contains(obj))
+            observers.add(obj);
+
+
+    }
+
+    @Override
+    public void unregister(Observer obj) {
+        observers.remove(obj);
+    }
+
+    @Override
+    public void notifyObservers(Object changedObject) {
+        for (Observer obj : observers)
+            obj.update(changedObject);
+
     }
 
     private class gameLoop extends java.util.TimerTask{
@@ -49,18 +110,8 @@ class VangDeVolger {
         private Integer frameCount = 0;
 
         public void run(){//the actual game loop
-            frameCount += 1;
-            //TODO improve logic for win/loose conditions
-            boolean freedom = false;
-            for (Tile neighbour : enemy.myTile.neighbourMap.values()) {
-                freedom = freedom || neighbour.isEmpty();
-            }
-            if (!freedom)
-                frame.system_exit(); //Game over!
 
-            if (frameCount % (FPS * 5) == 0)//Enemy moves every second
-                enemy.AI();
-
+            notifyObservers(null);//here nothing needs to be passed since the objects handle the rest themselves
             frame.repaint();
 
             if(!isRunning){
