@@ -10,18 +10,13 @@ public abstract class MovableObject extends GameObject {
         myTile.setContent(this);
     }
 
-    MovableObject() {
-        //this does nothinig but makes sure that
-        //enemy and player can be singeltons
-    }
-
     public void setMyTile(Tile myTile) {
         this.myTile = myTile;
     }
 
     @Override
     public boolean canYouMove(DirectionEnum direction) {
-        return (myTile.neighbourMap.get(direction).isEmpty() || direction == DirectionEnum.NONE || myTile.neighbourMap.get(direction).getContent().canYouMove(direction));
+        return (myTile.neighbourMap.get(direction).isEmpty() || myTile.neighbourMap.get(direction).getContent() instanceof Player || direction == DirectionEnum.NONE || myTile.neighbourMap.get(direction).getContent().canYouMove(direction));
     }
 
     void move(DirectionEnum direction) {

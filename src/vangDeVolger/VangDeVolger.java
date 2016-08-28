@@ -6,15 +6,15 @@ import java.util.Timer;
 
 class VangDeVolger implements Observer, Subject {
 
-    private static final Integer FPS = 60;
+    public static final Integer FPS = 60;
     private World world;
     private UI frame;
     private Timer timer;
     private List<Observer> observers;
     private boolean isRunning = true;
 
-    private int boxPercentage = 40;
-    private int rockPercentage = 1;
+    private int boxPercentage = 20;
+    private int rockPercentage = 5;
 
     //all initialization is handeled in startGame so it's easy to reset
     private VangDeVolger() {
@@ -44,11 +44,10 @@ class VangDeVolger implements Observer, Subject {
         game.startGame();
     }
 
-    private void startGame(){
-
+    private void startGame() {
 
         frame.setWorld(world);
-        timer.schedule(new gameLoop(),0, 1000/FPS);//timing mechanism at 60fps
+        timer.schedule(new gameLoop(), 0, 1000 / FPS);//timing mechanism at 60fps
     }
 
     @Override
@@ -57,14 +56,12 @@ class VangDeVolger implements Observer, Subject {
 
         if (changedObject instanceof String)
             if (changedObject == "win") {
-                frame.win();
                 frame.repaint();
+                frame.win();
                 timer.cancel();
             } else if (changedObject == "lose") {
-                System.out.println("YOU LOSE");
-                frame.lose();
                 frame.repaint();
-                System.out.println("timer canceled");
+                frame.lose();
                 timer.cancel();
             } else if (changedObject == "reset") {
                 world.reset(boxPercentage, rockPercentage);
@@ -72,15 +69,14 @@ class VangDeVolger implements Observer, Subject {
                 timer = new Timer();
                 timer.schedule(new gameLoop(), 0, 1000 / FPS);
 
-            } else if (changedObject == "pauze") {
-                System.out.println("Pauze recieved");
+            } else if (changedObject == "pause") {
                 if (isRunning) {
                     isRunning = false;
                     timer.cancel();
                 } else {
                     isRunning = true;
                     timer = new Timer();
-                    timer.schedule(new gameLoop(), 0, 1000 / FPS);//timing mechanism at 60fps
+                    timer.schedule(new gameLoop(), 0, 1000 / FPS);
                 }
 
             }
@@ -111,9 +107,9 @@ class VangDeVolger implements Observer, Subject {
 
     }
 
-    private class gameLoop extends java.util.TimerTask{
+    private class gameLoop extends java.util.TimerTask {
 
-        public void run(){//the actual game loop
+        public void run() {//the actual game loop
 
             notifyObservers(null);//here nothing needs to be passed since the objects handle the rest themselves
             frame.repaint();

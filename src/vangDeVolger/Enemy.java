@@ -9,31 +9,15 @@ import java.util.Map;
 
 
 public class Enemy extends MovableObject implements Subject, Observer {
-    //Enemy is a singelton class
-    private static Enemy instance = null;
+
     private List<Observer> observers;
     private int frameCount = 0;
+    private DirectionEnum dir = DirectionEnum.NONE;
 
-    private Enemy(Tile newTile) {
+    public Enemy(Tile newTile) {
         super(newTile);
         color = Color.red;
         this.observers = new LinkedList<>();
-    }
-
-
-//    private Enemy() {
-//        color = Color.red;
-//        this.observers = new LinkedList<>();
-//    }
-
-    public static Enemy getInstance(Tile myTile) {
-        if (instance == null)
-            instance = new Enemy(myTile);
-        return instance;
-    }
-
-    public static void reset(Tile myTile) {
-        instance = new Enemy(myTile);
     }
 
     //Enemy can't move boxes, hence the @Override
@@ -61,22 +45,22 @@ public class Enemy extends MovableObject implements Subject, Observer {
         Map<Tile, Integer> dist = new HashMap<>();
 
         queue.add(this.myTile);
-        pred.put(this.myTile,null);
-        dist.put(this.myTile,0);
+        pred.put(this.myTile, null);
+        dist.put(this.myTile, 0);
         Tile current;
         Tile nextMove = null;
 
-        while((current = queue.poll()) != null){
-            if(current.getContent() instanceof Player){
+        while ((current = queue.poll()) != null) {
+            if (current.getContent() instanceof Player) {
                 Tile temp = pred.get(current);
-                while(pred.get(temp)!= myTile)
+                while (pred.get(temp) != myTile)
                     temp = pred.get(temp);
                 nextMove = temp;
             }
             for (Tile neighbour : current.neighbourMap.values()) {
-                if(!pred.containsKey(neighbour) && (neighbour.isEmpty() || neighbour.getContent() instanceof Player)){
-                    dist.put(neighbour,dist.get(current)+1);
-                    pred.put(neighbour,current);
+                if (!pred.containsKey(neighbour) && (neighbour.isEmpty() || neighbour.getContent() instanceof Player)) {
+                    dist.put(neighbour, dist.get(current) + 1);
+                    pred.put(neighbour, current);
                     queue.add(neighbour);
                 }
 
@@ -97,7 +81,6 @@ public class Enemy extends MovableObject implements Subject, Observer {
         else {
             return randomMove();
         }
-
 
     }//BFS
 
@@ -141,16 +124,16 @@ public class Enemy extends MovableObject implements Subject, Observer {
         if (!canStillMove)
             notifyObservers("win");
 
-        DirectionEnum dir = BFS();
-
+        //check for target first otherwise BFS buggers up
         for (Tile neighbour : myTile.neighbourMap.values()) {
             if (neighbour.getContent() instanceof Player) {
-                System.out.println("Sending lose update");
                 notifyObservers("lose");
             }
         }
+        dir = BFS();
 
-        if (frameCount % 60 * 5 == 0)
+        //enemy moves every second
+        if (frameCount % VangDeVolger.FPS == 0)
             move(dir);
 
     }

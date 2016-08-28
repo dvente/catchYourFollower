@@ -4,23 +4,18 @@ import java.awt.*;
 
 class Player extends MovableObject implements Observer {
 
-    //Player is a singelton class
-    private static Player instance = null;
+    boolean paused = false;
+    //this makes sure the player moves on a frame and doesn't get desynct form the enemy
     private DirectionEnum nextDir;
+
     public Player(Tile newTile) {
         super(newTile);
         color = Color.blue;
         nextDir = DirectionEnum.NONE;
     }
 
-    public static Player getInstance(Tile myTile) {
-        if (instance == null)
-            instance = new Player(myTile);
-        return instance;
-    }
-
-    public static void reset(Tile myTile) {
-        instance = new Player(myTile);
+    public void setNextDir(DirectionEnum nextDir) {
+        this.nextDir = nextDir;
     }
 
     //we'll get updates from two different subjects so we have to differentiate between
@@ -28,18 +23,25 @@ class Player extends MovableObject implements Observer {
     @Override
     public void update(Object changedObject) {
 
-        //String updates don't concern the player
+
         if (changedObject instanceof String) {
+            if (changedObject == "pause") {
+                paused = !paused;
+                nextDir = DirectionEnum.NONE;
+            }
             return;
         }
 
         if (changedObject != null)
             nextDir = (DirectionEnum) changedObject;
-        if (changedObject == null) {
+
+        if (!paused) {
             move(nextDir);
             nextDir = DirectionEnum.NONE;
 
         }
+
+
     }
 
 }
