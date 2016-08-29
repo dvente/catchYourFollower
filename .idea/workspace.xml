@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c86ed779-e461-4526-bbf1-589d48b79716" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/vangDeVolger/vangDeVolger/Enemy.class" afterPath="$PROJECT_DIR$/out/production/vangDeVolger/vangDeVolger/Enemy.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/vangDeVolger/vangDeVolger/GameObject.class" afterPath="$PROJECT_DIR$/out/production/vangDeVolger/vangDeVolger/GameObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/vangDeVolger/vangDeVolger/MovableObject.class" afterPath="$PROJECT_DIR$/out/production/vangDeVolger/vangDeVolger/MovableObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/vangDeVolger/vangDeVolger/Player.class" afterPath="$PROJECT_DIR$/out/production/vangDeVolger/vangDeVolger/Player.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/vangDeVolger/vangDeVolger/Rock.class" afterPath="$PROJECT_DIR$/out/production/vangDeVolger/vangDeVolger/Rock.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/vangDeVolger/vangDeVolger/VangDeVolger.class" afterPath="$PROJECT_DIR$/out/production/vangDeVolger/vangDeVolger/VangDeVolger.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="c86ed779-e461-4526-bbf1-589d48b79716" name="Default" comment="" />
     <ignored path="vangDeVolger.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/out/" />
@@ -811,7 +803,7 @@
       <option name="presentableId" value="Default" />
       <updated>1472405565426</updated>
       <workItem from="1472405567510" duration="6556000" />
-      <workItem from="1472462184503" duration="5548000" />
+      <workItem from="1472462184503" duration="5663000" />
     </task>
     <task id="LOCAL-00001" summary="bug fixes">
       <created>1472416022505</created>
@@ -838,7 +830,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="12104000" />
+    <option name="totallyTimeSpent" value="12219000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
