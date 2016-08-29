@@ -4,6 +4,7 @@ import java.awt.*;
 
 public class Rock extends GameObject {
     //This class doesn't add much, except that the canYouMove function now always returns false.
+    //and sets the correct colour
 
     //set the correct colour
     public Rock() {

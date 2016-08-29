@@ -7,16 +7,14 @@ import java.util.Timer;
 class VangDeVolger implements Observer, Subject {
 
     public static final Integer FPS = 60;
-    private World world;
-    private UI frame;
+    private final World world;
+    private final UI frame;
+    private final int boxPercentage = 50;
+    private final int rockPercentage = 5;
     private Timer timer;
     private List<Observer> observers;
     private boolean isRunning = true;
 
-    private int boxPercentage = 20;
-    private int rockPercentage = 5;
-
-    //all initialization is handeled in startGame so it's easy to reset
     private VangDeVolger() {
         observers = new LinkedList<>();
 
@@ -24,7 +22,7 @@ class VangDeVolger implements Observer, Subject {
         int gridWidth = 10;
         world = new World(gridLength, gridWidth, boxPercentage, rockPercentage);
 
-        //player needs to be pased to setup observer patern between keyboard and player
+        //player needs to be passed to setup observer pattern between keyboard and player
         frame = new UI(gridLength, gridWidth, world.getPlayer(), this);
         timer = new Timer();
         isRunning = true;
@@ -34,7 +32,7 @@ class VangDeVolger implements Observer, Subject {
         //setup Enemy as publisher to get notified about end game logic
         world.getEnemy().register(this);
 
-        //setup Vang de Volger to let the game peices know when to move
+        //setup Vang de Volger as publisher to let the game pieces know when to move
         register(world.getEnemy());
         register(world.getPlayer());
     }
@@ -45,31 +43,35 @@ class VangDeVolger implements Observer, Subject {
     }
 
     private void startGame() {
-
         frame.setWorld(world);
         timer.schedule(new gameLoop(), 0, 1000 / FPS);//timing mechanism at 60fps
     }
 
     @Override
     public void update(Object changedObject) {
-        // Only the enemy will notify VangDeVolger so no typechecking is needed
-
-        if (changedObject instanceof String)
+        if (changedObject instanceof String) {
             if (changedObject == "win") {
+
                 frame.repaint();
                 frame.win();
                 timer.cancel();
+
             } else if (changedObject == "lose") {
+
                 frame.repaint();
                 frame.lose();
                 timer.cancel();
+
             } else if (changedObject == "reset") {
+
                 world.reset(boxPercentage, rockPercentage);
                 isRunning = true;
+                timer.cancel();
                 timer = new Timer();
                 timer.schedule(new gameLoop(), 0, 1000 / FPS);
 
             } else if (changedObject == "pause") {
+
                 if (isRunning) {
                     isRunning = false;
                     timer.cancel();
@@ -80,7 +82,7 @@ class VangDeVolger implements Observer, Subject {
                 }
 
             }
-
+        }
     }
 
     @Override
@@ -91,8 +93,6 @@ class VangDeVolger implements Observer, Subject {
 
         if (!observers.contains(obj))
             observers.add(obj);
-
-
     }
 
     @Override
@@ -104,7 +104,6 @@ class VangDeVolger implements Observer, Subject {
     public void notifyObservers(Object changedObject) {
         for (Observer obj : observers)
             obj.update(changedObject);
-
     }
 
     private class gameLoop extends java.util.TimerTask {

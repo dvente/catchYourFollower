@@ -12,7 +12,7 @@ public class Enemy extends MovableObject implements Subject, Observer {
 
     private List<Observer> observers;
     private int frameCount = 0;
-    private DirectionEnum dir = DirectionEnum.NONE;
+    private boolean paused = false;
 
     public Enemy(Tile newTile) {
         super(newTile);
@@ -22,8 +22,8 @@ public class Enemy extends MovableObject implements Subject, Observer {
 
     //Enemy can't move boxes, hence the @Override
     @Override
-    public void move(DirectionEnum direction) {
-        Tile directionTile = (myTile.neighbourMap.get(direction));
+    void move(DirectionEnum direction) {
+        Tile directionTile = (getNeighbourTile(direction));
 
         if (directionTile == null) return;
 
@@ -67,16 +67,16 @@ public class Enemy extends MovableObject implements Subject, Observer {
             }
         }
 
-        if (myTile.neighbourMap.get(DirectionEnum.UP) == nextMove)
+        if (getNeighbourTile(DirectionEnum.UP) == nextMove)
             return DirectionEnum.UP;
 
-        else if (myTile.neighbourMap.get(DirectionEnum.DOWN) == nextMove)
+        else if (getNeighbourTile(DirectionEnum.DOWN) == nextMove)
             return DirectionEnum.DOWN;
 
-        else if (myTile.neighbourMap.get(DirectionEnum.LEFT) == nextMove)
+        else if (getNeighbourTile(DirectionEnum.LEFT) == nextMove)
             return DirectionEnum.LEFT;
 
-        else if (myTile.neighbourMap.get(DirectionEnum.RIGHT) == nextMove)
+        else if (getNeighbourTile(DirectionEnum.RIGHT) == nextMove)
             return DirectionEnum.RIGHT;
         else {
             return randomMove();
@@ -105,36 +105,44 @@ public class Enemy extends MovableObject implements Subject, Observer {
             obj.update(changedObject);
     }
 
+
     @Override
     public void update(Object changedObject) {
 
-        //string updates do not concern the enemy
-        if (changedObject instanceof String)
+        DirectionEnum dir;
+        if (changedObject instanceof String) {
+            if (changedObject == "pause") {
+                paused = !paused;
+            }
             return;
-
-        frameCount++;
-
-        boolean canStillMove = false;
-        for (Tile neighbour : myTile.neighbourMap.values()) {
-            if (neighbour.isEmpty()) {
-                canStillMove = true;
-                break;
-            }
         }
-        if (!canStillMove)
-            notifyObservers("win");
 
-        //check for target first otherwise BFS buggers up
-        for (Tile neighbour : myTile.neighbourMap.values()) {
-            if (neighbour.getContent() instanceof Player) {
-                notifyObservers("lose");
+        if (!paused) {
+            frameCount++;
+
+            boolean canStillMove = false;
+            for (Tile neighbour : myTile.neighbourMap.values()) {
+                if (neighbour.isEmpty() || neighbour.getContent() instanceof Player) {
+                    canStillMove = true;
+                    break;
+                }
             }
-        }
-        dir = BFS();
+            if (!canStillMove)
+                notifyObservers("win");
 
-        //enemy moves every second
-        if (frameCount % VangDeVolger.FPS == 0)
-            move(dir);
+            //check for target first otherwise BFS buggers up
+            for (Tile neighbour : myTile.neighbourMap.values()) {
+                if (neighbour.getContent() instanceof Player) {
+                    notifyObservers("lose");
+                }
+            }
+
+            dir = BFS();
+
+            //enemy moves every second
+            if (frameCount % VangDeVolger.FPS == 0)
+                move(dir);
+        }
 
     }
 

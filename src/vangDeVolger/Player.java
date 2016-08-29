@@ -4,8 +4,9 @@ import java.awt.*;
 
 class Player extends MovableObject implements Observer {
 
-    boolean paused = false;
-    //this makes sure the player moves on a frame and doesn't get desynct form the enemy
+    private boolean paused = false;
+
+    //this makes sure the player moves on a frame and doesn't get desynced form the enemy
     private DirectionEnum nextDir;
 
     public Player(Tile newTile) {
@@ -14,15 +15,10 @@ class Player extends MovableObject implements Observer {
         nextDir = DirectionEnum.NONE;
     }
 
-    public void setNextDir(DirectionEnum nextDir) {
-        this.nextDir = nextDir;
-    }
-
     //we'll get updates from two different subjects so we have to differentiate between
     //when we get directional input and when we can move
     @Override
     public void update(Object changedObject) {
-
 
         if (changedObject instanceof String) {
             if (changedObject == "pause") {
@@ -40,8 +36,5 @@ class Player extends MovableObject implements Observer {
             nextDir = DirectionEnum.NONE;
 
         }
-
-
     }
-
 }
